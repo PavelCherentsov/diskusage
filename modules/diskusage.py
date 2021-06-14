@@ -44,6 +44,9 @@ class DiskUsage:
         self.exclude = exclude
 
         self.total_size = 0
+        self.count = 0
+        self.deleted_size = 0
+        self.dif = diff
 
         if stat_ext:
             self.add = self.add_statistics
@@ -59,6 +62,8 @@ class DiskUsage:
     def start(self):
         size, count = self.go_in_dir(os.path.abspath(self.path), 0, 0)
         self.check_params_and_add(-1, self.path, size, count)
+        if self.dif:
+            print(str(self.count) + '\t' + File.get_size(self.total_size))
 
     def go_in_dir(self, root, level, size):
         res_size = 0
@@ -107,7 +112,9 @@ class DiskUsage:
         if os.path.isfile(path):
             for e in self.diff_files:
                 if filecmp.cmp(path, e):
-                    print(e[len(self.path):]+"\t=======\t"+path[len(self.path):])
+                    print(e[len(self.path):]+"\t=======\t"+path[len(self.path):] + '\t' + File.get_size(os.path.getsize(path)))
+                    self.total_size += os.path.getsize(path)
+                    self.count += 1
                     os.remove(path)
                     is_new_file = False
                     break
