@@ -5,15 +5,18 @@ import sys
 class Console:
     def __init__(self, du, args):
         self.du = du(args.path, args.level, args.show_only,
-                     args.exclude, args.count_files, args.stat_ext)
+                     args.exclude, args.count_files, args.stat_ext, args.diff)
         self.sort = args.sort
         self.stat_ext = args.stat_ext
+        self.diff = args.diff
         signal.signal(signal.SIGINT, self.stop)
         self.du.start()
         self.print()
 
     def print(self):
         if self.stat_ext:
+            res = list(self.du.res.values())
+        elif self.diff:
             res = list(self.du.res.values())
         else:
             res = self.du.res

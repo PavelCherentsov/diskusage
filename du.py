@@ -24,6 +24,8 @@ if __name__ == '__main__':
                              'extension')
     parser.add_argument('--count-files', '-c', action='store_true',
                         help='Adds additional statistics (without --stat-ext)')
+    parser.add_argument('--diff', '-d', action='store_true',
+                        help='')
     args = parser.parse_args()
     try:
         Console(DiskUsage, args)

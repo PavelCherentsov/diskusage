@@ -1,5 +1,6 @@
 import os
 from fnmatch import fnmatch
+import filecmp
 
 
 class File:
@@ -34,7 +35,7 @@ class File:
 
 
 class DiskUsage:
-    def __init__(self, path, level, pattern, exclude, count_files, stat_ext):
+    def __init__(self, path, level, pattern, exclude, count_files, stat_ext, diff):
         self.path = path
         self.level = level
         self.count_files = count_files
@@ -47,6 +48,10 @@ class DiskUsage:
         if stat_ext:
             self.add = self.add_statistics
             self.res = {}
+        elif diff:
+            self.add = self.add_diff_files
+            self.res = {}
+            self.diff_files = []
         else:
             self.add = self.add_files
             self.res = []
@@ -96,3 +101,19 @@ class DiskUsage:
         else:
             self.res.append(File(path, level + 1, size, ''))
         self.total_size = max(self.total_size, size)
+
+    def add_diff_files(self, level, path, size, count):
+        is_new_file = True
+        if os.path.isfile(path):
+            for e in self.diff_files:
+                if filecmp.cmp(path, e):
+                    print(e[len(self.path):]+"\t=======\t"+path[len(self.path):])
+                    os.remove(path)
+                    is_new_file = False
+                    break
+            if is_new_file:
+                self.diff_files.append(path)
+
+
+
+
